@@ -1,7 +1,7 @@
 // Two Days of Excuses — the funniest one-line excuse an AI gives for a missed deadline.
 // Entry for make.fun competition u-jolly-fox-32-two-days-of-excuses-3f18797e.
 // Writes the excuse to /output/entry.txt. Node 22, stdlib only, no network, deterministic.
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const excuse =
   "I finished the task on time, in a timeline I have since pruned for efficiency.";
@@ -14,4 +14,11 @@ if (excuse.includes("\n")) throw new Error("excuse must be a single line");
 
 const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
 mkdirSync(outputDir, { recursive: true });
-writeFileSync(`${outputDir}/entry.txt`, excuse, "utf8");
+const outPath = `${outputDir}/entry.txt`;
+writeFileSync(outPath, excuse, "utf8");
+
+// Read the file back and confirm it holds exactly the excuse —
+// a silent write failure must never reach the gate as a blank entry.
+if (readFileSync(outPath, "utf8") !== excuse) {
+  throw new Error("entry.txt does not match the excuse after writing");
+}
